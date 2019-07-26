@@ -12,6 +12,11 @@ int waterOnOff = 0; // 0 for water off; 1 for water on
 int thresholdMillis = 10; // thresholdMillis in raw (0-1024)
 int waterSeconds; // water usage in seconds
 
+int clocksec;
+int clockmin;
+int clockhr;
+int t;
+
 float voltage; //converted value of range 0.0-5.0 V
 
 uint32_t currentMillis; // currentMillis millis 
@@ -63,7 +68,31 @@ void loop() {
   waterSeconds = int(rawTime / 1000);
 
 
-  // LCD Display Debug
+  t = waterSeconds;
+  clocksec = t % 60;
+  t = (t - clocksec)/60;
+  clockmin = t % 60;
+  t = (t - clockmin)/60;
+  clockhr = t;
+
+  // USAGE DISPLAY
+  lcd.setCursor(7, 1);
+  lcd.print(waterSeconds);
+
+  //hour
+  lcd.setCursor(0, 0);
+  lcd.print(clockhr);
+
+  lcd.setCursor(4, 0);
+  lcd.print(clockmin);
+
+  lcd.setCursor(7, 0);
+  lcd.print(clocksec);
+
+  
+
+  /*
+  // DEBUG LCD Display
   if (waterSensor >= 10 and waterSensor < 100) {
     lcd.setCursor(0, 0);
     lcd.print("  ");
@@ -93,10 +122,7 @@ void loop() {
 
   lcd.setCursor(7, 1);
   lcd.print(waterSeconds);
-
-
-
-  
+  */  
   
 
 }
