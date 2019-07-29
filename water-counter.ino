@@ -5,7 +5,9 @@
 
 // if display doesn't work --> page 140 - https://github.com/Freenove/Freenove_Ultimate_Starter_Kit_for_Arduino/blob/master/Tutorial.pdf 
 
-#include<LiquidCrystal.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+//#include<LiquidCrystal.h>
 
 int waterSensor; //raw value from waterSensor is between 0 and 1023
 int waterOnOff = 0; // 0 for water off; 1 for water on 
@@ -29,7 +31,8 @@ uint32_t rawTime = 0; // raw time in millisecond
 
 
 // initalize the library with the numbers of the interface pins
-LiquidCrystal lcd(12,11,5,4,3,2);
+//LiquidCrystal lcd(12,11,5,4,3,2);
+LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
 void setup() {
   // put your setup code here, to run once:
@@ -46,13 +49,15 @@ void setup() {
   delay(500); //Time of welcome display
   lcd.clear();
 
+  
+
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
 
   currentMillis = millis();
-  waterSensor = analogRead(A5);
+  waterSensor = analogRead(A0);
   voltage = waterSensor * (5.0/1023.0);
   Serial.println(waterSensor);
 
