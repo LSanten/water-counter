@@ -12,10 +12,14 @@ int waterOnOff = 0; // 0 for water off; 1 for water on
 int thresholdMillis = 10; // thresholdMillis in raw (0-1024)
 int waterSeconds; // water usage in seconds
 
-int clocksec;
-int clockmin;
-int clockhr;
-int t;
+int clockmil; //milliseconds of water usage for counter 
+int clocksec; //seconds
+int clockmin; //minutes
+int clockhr; //hours
+int t; //temporary variable for display calculation - in seconds
+
+int clockLine = 1; //line position for water time on display
+int clockColumn = 4; //column position for water time on display
 
 float voltage; //converted value of range 0.0-5.0 V
 
@@ -39,7 +43,7 @@ void setup() {
   lcd.print("WaterCounter");
   lcd.setCursor(13, 1);
   lcd.print(":-)");
-  delay(1800);
+  delay(500); //Time of welcome display
   lcd.clear();
 
 }
@@ -64,8 +68,9 @@ void loop() {
     rawTime = rawTime + (currentMillis - oldMillis);
   }
   
-  oldMillis = currentMillis; 
+  oldMillis = currentMillis;
   waterSeconds = int(rawTime / 1000);
+  clockmil = rawTime % 1000; 
 
 
   t = waterSeconds;
@@ -75,24 +80,63 @@ void loop() {
   t = (t - clockmin)/60;
   clockhr = t;
 
-  // USAGE DISPLAY
-  lcd.setCursor(7, 1);
-  lcd.print(waterSeconds);
+  // Account for two digit numbers for display
+  int adjSec = 0; //adjustment variables for adjusting placement of digits when >= 10; not adjusted --> 0; adjustement --> 1
+  int adjMin = 0; 
+  int adjHr = 0;
+  
+  if (clocksec >= 10){
+    adjSec = 1;
+  }  
+  if (clockmin >= 10){
+    adjMin = 1;
+  }
+  if (clockhr >= 10){
+    adjHr = 1;
+  }
 
-  //hour
-  lcd.setCursor(0, 0);
-  lcd.print(clockhr);
-
-  lcd.setCursor(4, 0);
-  lcd.print(clockmin);
-
-  lcd.setCursor(7, 0);
-  lcd.print(clocksec);
-
+  // // INTERFACE - DISPLAY
+  if (waterOnOff == 1){
+    lcd.setCursor(0,0);
+    lcd.print("--            --");
+  }
+  else {
+    lcd.setCursor(0,0);
+    lcd.print("Your Water Usage");
+  }
   
 
+  //Time HH:MM:SS 
+  // -- hours
+  if (adjHr ==0){
+    lcd.setCursor(clockColumn, clockLine);
+    lcd.print("0");
+  }
+  lcd.setCursor(clockColumn + 1 - adjHr, clockLine);
+  lcd.print(clockhr);
+  // -- :
+  lcd.setCursor(clockColumn + 2, clockLine);
+  lcd.print(":");
+  // -- minutes
+  if (adjMin == 0){
+    lcd.setCursor(clockColumn + 3, clockLine);
+    lcd.print("0");
+  }
+  lcd.setCursor(clockColumn + 4 - adjMin, clockLine);
+  lcd.print(clockmin);
+  // -- :
+  lcd.setCursor(clockColumn + 5, clockLine);
+  lcd.print(":");
+  // -- seconds
+  if (adjSec == 0){
+    lcd.setCursor(clockColumn + 6, clockLine);
+    lcd.print("0");
+  }  
+  lcd.setCursor(clockColumn + 7 - adjSec, clockLine);
+  lcd.print(clocksec);
+
   /*
-  // DEBUG LCD Display
+  // DEBUG LCD Display #1
   if (waterSensor >= 10 and waterSensor < 100) {
     lcd.setCursor(0, 0);
     lcd.print("  ");
@@ -117,12 +161,52 @@ void loop() {
     lcd.print(waterSensor);    
   }
   
-  lcd.setCursor(0, 1); // (column, row) --> it starts with 
+  lcd.setCursor(0, 1);
   lcd.print(voltage);
 
   lcd.setCursor(7, 1);
   lcd.print(waterSeconds);
+
+  // DEBUG LCD Display #2
+  lcd.setCursor(4, 1);
+  lcd.print(waterSeconds);
+
+  //Time HH:MM:SS 
+  // -- hours
+  if (adjHr ==0){
+    lcd.setCursor(clockColumn, clockLine);
+    lcd.print("0");
+  }
+  lcd.setCursor(clockColumn + 1 - adjHr, clockLine);
+  lcd.print(clockhr);
+  // -- :
+  lcd.setCursor(clockColumn + 2, clockLine);
+  lcd.print(":");
+  // -- minutes
+  if (adjMin == 0){
+    lcd.setCursor(clockColumn + 3, clockLine);
+    lcd.print("0");
+  }
+  lcd.setCursor(clockColumn + 4 - adjMin, 0);
+  lcd.print(clockmin);
+  // -- :
+  lcd.setCursor(clockColumn + 5, clockLine);
+  lcd.print(":");
+  // -- seconds
+  if (adjSec == 0){
+    lcd.setCursor(clockColumn + 6, clockLine);
+    lcd.print("0");
+  }  
+  lcd.setCursor(clockColumn + 7 - adjSec, clockLine);
+  lcd.print(clocksec);
+
+  lcd.setCursor(10, 0);
+  lcd.print(clockmil);
+
+  lcd.setCursor(10, 1);
+  lcd.print(voltage);
   */  
+
   
 
 }
