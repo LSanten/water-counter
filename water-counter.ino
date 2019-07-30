@@ -1,13 +1,10 @@
 // Leon Santen
-
 // if doesnt connect to arduino:
 // sudo chmod a+rw /dev/ttyACM0
 
-// if display doesn't work --> page 140 - https://github.com/Freenove/Freenove_Ultimate_Starter_Kit_for_Arduino/blob/master/Tutorial.pdf 
-
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-//#include<LiquidCrystal.h>
+//#include<LiquidCrystal.h> // if display WIHTOUT I2C doesn't work --> page 140 - https://github.com/Freenove/Freenove_Ultimate_Starter_Kit_for_Arduino/blob/master/Tutorial.pdf 
 
 int waterSensor; //raw value from waterSensor is between 0 and 1023
 int waterOnOff = 0; // 0 for water off; 1 for water on 
@@ -29,7 +26,6 @@ float voltage; //converted value of range 0.0-5.0 V
 uint32_t currentMillis; // currentMillis millis 
 uint32_t oldMillis = 0; // oldMillis millis()
 uint32_t rawTime = 0; // raw time in millisecond
-
 
 // initalize the library with the numbers of the interface pins
 //LiquidCrystal lcd(12,11,5,4,3,2);
@@ -66,7 +62,7 @@ void loop() {
     waterOnOff = 1;
     rawTime = rawTime + (currentMillis - oldMillis);
   }
-  else if (waterSensor >= thresholdMillis and waterOnOff == 1) {
+  else if (waterSensor > thresholdMillis and waterOnOff == 1) {
     rawTime = rawTime + (currentMillis - oldMillis);
   }
   else if (waterSensor <= thresholdMillis and waterOnOff == 1) { // if water stops running
