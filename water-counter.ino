@@ -19,6 +19,7 @@ int clocksec; //seconds
 int clockmin; //minutes
 int clockhr; //hours
 int t; //temporary variable for display calculation - in seconds
+int timeOff; // millis() when waterOnOff if 0
 
 int clockLine = 1; //line position for water time on display
 int clockColumn = 4; //column position for water time on display
@@ -57,7 +58,7 @@ void loop() {
   // put your main code here, to run repeatedly:
 
   currentMillis = millis();
-  waterSensor = analogRead(A0);
+  waterSensor = analogRead(A1);
   voltage = waterSensor * (5.0/1023.0);
   Serial.println(waterSensor);
 
@@ -70,6 +71,7 @@ void loop() {
   }
   else if (waterSensor <= thresholdMillis and waterOnOff == 1) { // if water stops running
     waterOnOff = 0;
+    timeOff = millis();
     rawTime = rawTime + (currentMillis - oldMillis);
   }
   
@@ -99,8 +101,16 @@ void loop() {
   if (clockhr >= 10){
     adjHr = 1;
   }
+  
+  // TURN ON OFF - ENERGY SAVER
+  if (waterOnOff == 1){
+    lcd.backlight();
+  }
+  else if (currentMillis - timeOff > 3000) {
+    lcd.noBacklight();
+  }
 
-  // // INTERFACE - DISPLAY
+  // // INTERFACE - TEXT - DISPLAY
   if (waterOnOff == 1){
     lcd.setCursor(0,0);
     lcd.print("--            --");
