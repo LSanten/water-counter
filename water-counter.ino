@@ -18,8 +18,8 @@ int clockhr; //hours
 int t; //temporary variable for display calculation - in seconds
 int timeOff; // millis() when waterOnOff if 0
 
-int clockLine = 1; //line position for water time on display
-int clockColumn = 4; //column position for water time on display
+int dispLine = 1; //line position for water time on display
+int dispColumn = 4; //column position for water time on display
 
 float voltage; //converted value of range 0.0-5.0 V
 
@@ -51,13 +51,12 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
   currentMillis = millis();
   waterSensor = analogRead(A1);
   voltage = waterSensor * (5.0/1023.0);
   Serial.println(waterSensor);
 
+  // // MAIN LOGIC - WATER COUNTER
   if (waterSensor > thresholdMillis and waterOnOff == 0) { // if water starts running
     waterOnOff = 1;
     rawTime = rawTime + (currentMillis - oldMillis);
@@ -70,11 +69,11 @@ void loop() {
     timeOff = millis();
     rawTime = rawTime + (currentMillis - oldMillis);
   }
-  
+
+  // // CLOCK CALCULATION - divide into hours, minutes, seconds, milliseconds
   oldMillis = currentMillis;
   waterSeconds = int(rawTime / 1000);
   clockmil = rawTime % 1000; 
-
 
   t = waterSeconds;
   clocksec = t % 60;
@@ -98,7 +97,7 @@ void loop() {
     adjHr = 1;
   }
   
-  // TURN ON OFF - ENERGY SAVER
+  // // TURN BACKGROUND LIGHT ON OFF - ENERGY SAVER
   if (waterOnOff == 1){
     lcd.backlight();
   }
@@ -116,34 +115,33 @@ void loop() {
     lcd.print("Your Water Usage");
   }
   
-
   //Time HH:MM:SS 
   // -- hours
   if (adjHr ==0){
-    lcd.setCursor(clockColumn, clockLine);
+    lcd.setCursor(dispColumn, dispLine);
     lcd.print("0");
   }
-  lcd.setCursor(clockColumn + 1 - adjHr, clockLine);
+  lcd.setCursor(dispColumn + 1 - adjHr, dispLine);
   lcd.print(clockhr);
   // -- :
-  lcd.setCursor(clockColumn + 2, clockLine);
+  lcd.setCursor(dispColumn + 2, dispLine);
   lcd.print(":");
   // -- minutes
   if (adjMin == 0){
-    lcd.setCursor(clockColumn + 3, clockLine);
+    lcd.setCursor(dispColumn + 3, dispLine);
     lcd.print("0");
   }
-  lcd.setCursor(clockColumn + 4 - adjMin, clockLine);
+  lcd.setCursor(dispColumn + 4 - adjMin, dispLine);
   lcd.print(clockmin);
   // -- :
-  lcd.setCursor(clockColumn + 5, clockLine);
+  lcd.setCursor(dispColumn + 5, dispLine);
   lcd.print(":");
   // -- seconds
   if (adjSec == 0){
-    lcd.setCursor(clockColumn + 6, clockLine);
+    lcd.setCursor(dispColumn + 6, dispLine);
     lcd.print("0");
   }  
-  lcd.setCursor(clockColumn + 7 - adjSec, clockLine);
+  lcd.setCursor(dispColumn + 7 - adjSec, dispLine);
   lcd.print(clocksec);
 
   /*
@@ -185,30 +183,30 @@ void loop() {
   //Time HH:MM:SS 
   // -- hours
   if (adjHr ==0){
-    lcd.setCursor(clockColumn, clockLine);
+    lcd.setCursor(dispColumn, dispLine);
     lcd.print("0");
   }
-  lcd.setCursor(clockColumn + 1 - adjHr, clockLine);
+  lcd.setCursor(dispColumn + 1 - adjHr, dispLine);
   lcd.print(clockhr);
   // -- :
-  lcd.setCursor(clockColumn + 2, clockLine);
+  lcd.setCursor(dispColumn + 2, dispLine);
   lcd.print(":");
   // -- minutes
   if (adjMin == 0){
-    lcd.setCursor(clockColumn + 3, clockLine);
+    lcd.setCursor(dispColumn + 3, dispLine);
     lcd.print("0");
   }
-  lcd.setCursor(clockColumn + 4 - adjMin, 0);
+  lcd.setCursor(dispColumn + 4 - adjMin, 0);
   lcd.print(clockmin);
   // -- :
-  lcd.setCursor(clockColumn + 5, clockLine);
+  lcd.setCursor(dispColumn + 5, dispLine);
   lcd.print(":");
   // -- seconds
   if (adjSec == 0){
-    lcd.setCursor(clockColumn + 6, clockLine);
+    lcd.setCursor(dispColumn + 6, dispLine);
     lcd.print("0");
   }  
-  lcd.setCursor(clockColumn + 7 - adjSec, clockLine);
+  lcd.setCursor(dispColumn + 7 - adjSec, dispLine);
   lcd.print(clocksec);
 
   lcd.setCursor(10, 0);
@@ -217,7 +215,4 @@ void loop() {
   lcd.setCursor(10, 1);
   lcd.print(voltage);
   */  
-
-  
-
 }
