@@ -16,7 +16,6 @@ int clocksec; //seconds
 int clockmin; //minutes
 int clockhr; //hours
 int t; //temporary variable for display calculation - in seconds
-int timeOff; // millis() when waterOnOff if 0
 
 int dispLine = 1; //line position for water time on display
 int dispColumn = 4; //column position for water time on display
@@ -26,6 +25,8 @@ float voltage; //converted value of range 0.0-5.0 V
 uint32_t currentMillis; // currentMillis millis 
 uint32_t oldMillis = 0; // oldMillis millis()
 uint32_t rawTime = 0; // raw time in millisecond
+uint32_t timeOff; // millis() when waterOnOff if 0
+
 
 // initalize the library with the numbers of the interface pins
 //LiquidCrystal lcd(12,11,5,4,3,2);
@@ -66,7 +67,7 @@ void loop() {
   }
   else if (waterSensor <= thresholdMillis and waterOnOff == 1) { // if water stops running
     waterOnOff = 0;
-    timeOff = millis();
+    timeOff = currentMillis;
     rawTime = rawTime + (currentMillis - oldMillis);
   }
 
@@ -109,7 +110,7 @@ void loop() {
   if (waterOnOff == 1){
     lcd.setCursor(0,0);
     lcd.print("--            --");
-  }
+   }
   else {
     lcd.setCursor(0,0);
     lcd.print("Your Water Usage");
