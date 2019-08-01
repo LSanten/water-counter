@@ -37,8 +37,8 @@ uint32_t currentMillis; // currentMillis millis
 uint32_t oldMillis = 0; // oldMillis millis()
 uint32_t rawTime = 0; // raw time in millisecond
 uint32_t timeOff; // millis() when waterOnOff if 0
-uint32_t resetInterval = 86400000; //time after which counter resets in millis 
-uint32_t intervalOffset = 15 * 60 * 60 * 1000; // offset for dailyt timer to reset at a certain time and not after 24h the first time. will keep reseting in 24 period
+uint32_t resetInterval = 24 * 60 * 60 * 1000; //time after which counter resets in millis
+uint32_t intervalOffset = 18 * 60 * 60 * 1000; // offset for dailyt timer to reset at a certain time and not after 24h the first time. will keep reseting in 24 period 
 
 
 // initalize the library with the numbers of the interface pins
@@ -92,7 +92,7 @@ void loop() {
   }
 
   // if time interval is exceeded --> reset rawTime 
-  if ((intervalOffset + currentMillis) % resetInterval <= 100 and intervalTrigger == 0) {  
+  if ((currentMillis + intervalOffset) % resetInterval <= 100 and intervalTrigger == 0) {  
     clocksec_old = clocksec; //assign current values to old values in order to reset rawTime to start recording new values
     clockmin_old = clockmin;
     clockhr_old = clockhr;  
@@ -104,7 +104,8 @@ void loop() {
     rawTime = 0; // reset current counter time
     intervalTrigger = 1;
   }
-  else if (currentMillis % resetInterval > 100){
+  //else if (currentMillis % resetInterval > 100){
+  else if ((currentMillis + intervalOffset) % resetInterval > 100){
     intervalTrigger = 0;
   }
   // // CLOCK CALCULATION - divide into hours, minutes, seconds, milliseconds
@@ -120,6 +121,10 @@ void loop() {
   clockhr = t;
 
   // Account for two digit numbers for display
+  adjSec = 0;
+  adjMin = 0;
+  adjHr = 0;  
+  
   if (clocksec >= 10){
     adjSec = 1;
   }  
@@ -133,11 +138,10 @@ void loop() {
   // // INTERFACE - TEXT - DISPLAY
   if (waterOnOff == 1){
     lcd.setCursor(0,0);
-    lcd.print("Your Water Usage");
-    
+    lcd.print("Your Water Usage");    
   }
   else {
-    if (adjHr_old ==0){
+    if (adjHr_old == 0){
       lcd.setCursor(dispColumn, dispLine - 1);
       lcd.print("0");
     }
