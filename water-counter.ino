@@ -37,8 +37,10 @@ uint32_t currentMillis; // currentMillis millis
 uint32_t oldMillis = 0; // oldMillis millis()
 uint32_t rawTime = 0; // raw time in millisecond
 uint32_t timeOff; // millis() when waterOnOff if 0
-uint32_t resetInterval = 24 * 60 * 60 * 1000; //time after which counter resets in millis
-uint32_t intervalOffset = 18 * 60 * 60 * 1000; // offset for dailyt timer to reset at a certain time and not after 24h the first time. will keep reseting in 24 period 
+uint32_t resetInterval = 86400000; //time after which counter resets in millis --> 24 * 60 * 60 * 1000 
+uint32_t intervalOffset = 68400000; // offset for dailyt timer to reset at a certain time and not after 24h the first time. will keep reseting in 24 period --> 19 * 60 * 60 * 1000
+int cycleNumber;
+int cycleNumberOld;
 
 
 // initalize the library with the numbers of the interface pins
@@ -92,7 +94,10 @@ void loop() {
   }
 
   // if time interval is exceeded --> reset rawTime 
+  cycleNumber = int((currentMillis + intervalOffset)/resetInterval);
+  
   if ((currentMillis + intervalOffset) % resetInterval <= 100 and intervalTrigger == 0) {  
+  //if (cycleNumber > cycleNumberOld) {  
     clocksec_old = clocksec; //assign current values to old values in order to reset rawTime to start recording new values
     clockmin_old = clockmin;
     clockhr_old = clockhr;  
@@ -103,9 +108,12 @@ void loop() {
     
     rawTime = 0; // reset current counter time
     intervalTrigger = 1;
+
+    cycleNumberOld = cycleNumber;
   }
   //else if (currentMillis % resetInterval > 100){
   else if ((currentMillis + intervalOffset) % resetInterval > 100){
+  //else if (cycleNumber == cycleNumberOld){
     intervalTrigger = 0;
   }
   // // CLOCK CALCULATION - divide into hours, minutes, seconds, milliseconds
